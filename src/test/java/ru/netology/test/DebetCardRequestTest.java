@@ -56,7 +56,7 @@ public class DebetCardRequestTest {
     void shouldNotSubmitRequestWrongName() {
         driver.get("http://localhost:9999");
         List<WebElement> elements = driver.findElements(By.className("input__control"));
-        elements.get(0).sendKeys("Petr");
+        elements.get(0).sendKeys("Петр");
         elements.get(1).sendKeys("+79111111111");
         driver.findElement(By.className("checkbox__box")).click();
         driver.findElement(By.className("button")).click();
