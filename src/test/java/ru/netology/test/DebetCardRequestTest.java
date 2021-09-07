@@ -22,7 +22,7 @@ public class DebetCardRequestTest {
     @BeforeAll
     static void seUpAll() {
         WebDriverManager.chromedriver().setup();
-       // System.setProperty("webdriver.chrome.driver", "./driver/chromedriver.exe");
+
     }
 
     @BeforeEach
@@ -32,6 +32,7 @@ public class DebetCardRequestTest {
         options.addArguments("--no-sandbox");
         options.addArguments("--headless");
         driver = new ChromeDriver(options);
+        driver.get("http://localhost:9999");
     }
 
     @AfterEach
@@ -42,19 +43,17 @@ public class DebetCardRequestTest {
 
     @Test
     void shouldSubmitRequest() {
-        driver.get("http://localhost:9999");
-        List<WebElement> elements = driver.findElements(By.className("input__control"));
+         List<WebElement> elements = driver.findElements(By.className("input__control"));
         elements.get(0).sendKeys("Петр");
         elements.get(1).sendKeys("+79111111111");
         driver.findElement(By.className("checkbox__box")).click();
         driver.findElement(By.className("button")).click();
-        String text = driver.findElement(By.className("paragraph")).getText();
+        String text = driver.findElement(By.cssSelector("[data-test-id='order-success']")).getText();
         assertEquals("Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.", text.trim());
     }
 
     @Test
     void shouldNotSubmitRequestWrongName() {
-        driver.get("http://localhost:9999");
         List<WebElement> elements = driver.findElements(By.className("input__control"));
         elements.get(0).sendKeys("Petr");
         elements.get(1).sendKeys("+79111111111");
@@ -67,7 +66,6 @@ public class DebetCardRequestTest {
 
     @Test
     void shouldNotSubmitRequestWrongTel() {
-        driver.get("http://localhost:9999");
         List<WebElement> elements = driver.findElements(By.className("input__control"));
         elements.get(0).sendKeys("Петр");
         elements.get(1).sendKeys("+791111111111");
@@ -80,7 +78,6 @@ public class DebetCardRequestTest {
 
     @Test
     void shouldNotSubmitRequestWrongAllTextFields() {
-        driver.get("http://localhost:9999");
         List<WebElement> elements = driver.findElements(By.className("input__control"));
         elements.get(0).sendKeys("Petr");
         elements.get(1).sendKeys("+791111111111");
@@ -95,12 +92,43 @@ public class DebetCardRequestTest {
 
     @Test
     void shouldNotSubmitRequestDontClickAgreement() {
-        driver.get("http://localhost:9999");
         List<WebElement> elements = driver.findElements(By.className("input__control"));
         elements.get(0).sendKeys("Петр");
         elements.get(1).sendKeys("+79111111111");
         driver.findElement(By.className("button")).click();
         String text = driver.findElement(By.className("input_invalid")).getText();
         assertEquals("Я соглашаюсь с условиями обработки и использования моих персональных данных и разрешаю сделать запрос в бюро кредитных историй", text.trim());
+    }
+    @Test
+    void ifAllTextFieldsAreEmpty() {
+        driver.findElement(By.className("checkbox__box")).click();
+        driver.findElement(By.className("button")).click();
+        String text = driver.findElement(By.className("input__sub")).getText();
+        assertEquals("Поле обязательно для заполнения", text.trim());
+    }
+    @Test
+    void ifNameFieldIsEmpty() {
+        List<WebElement> elements = driver.findElements(By.className("input__control"));
+        elements.get(1).sendKeys("+79111111111");
+        driver.findElement(By.className("checkbox__box")).click();
+        driver.findElement(By.className("button")).click();
+        String text = driver.findElement(By.className("input__sub")).getText();
+        assertEquals("Поле обязательно для заполнения", text.trim());
+    }
+    @Test
+    void ifPhoneFieldIsEmpty() {
+        List<WebElement> elements = driver.findElements(By.className("input__control"));
+        elements.get(0).sendKeys("Петр");
+        driver.findElement(By.className("checkbox__box")).click();
+        driver.findElement(By.className("button")).click();
+        List<WebElement> textElements = driver.findElements(By.className("input__sub"));
+        String text = textElements.get(1).getText();
+       assertEquals("Поле обязательно для заполнения", text.trim());
+    }
+    @Test
+    void ifAllFieldsAreEmpty() {
+        driver.findElement(By.className("button")).click();
+        String text = driver.findElement(By.className("input__sub")).getText();
+        assertEquals("Поле обязательно для заполнения", text.trim());
     }
 }

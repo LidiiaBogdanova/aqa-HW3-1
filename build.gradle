@@ -23,5 +23,4 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    // в тестах, вызывая `gradlew test -Dselenide.headless=true` будем передавать этот параметр в JVM (где его подтянет Selenide)
 }
